@@ -1,9 +1,13 @@
-import { PromiseProvider } from "mongoose";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axios from 'axios'
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser } from "../../actions/auth";
+import classnames from 'classnames'
 
 const Register = (props) => {
+  const { history } = props
+
+
 
   // Initial state
   const initialState = {
@@ -14,6 +18,15 @@ const Register = (props) => {
   }
 
   const [state, setState] = useState(initialState)
+
+  const dispatch = useDispatch()
+  
+  const auth = useSelector(state => state.auth)
+  const errors = useSelector(state => state.errors)
+
+  useEffect(() => {
+    if(auth.isAuthenticated) props.history.push("/dashboard")
+  }, [auth.isAuthenticated, props.history])
   
   // onChange
   const onInput = e => {
@@ -23,6 +36,7 @@ const Register = (props) => {
     })
   }
   
+
   // onSubmit
   const onRegister = e => {
     e.preventDefault()
@@ -33,9 +47,7 @@ const Register = (props) => {
         password: state.password,
         password2: state.password2
     }
-    console.log(newUser)
-
-
+    dispatch(registerUser(newUser, history))
   }
   
   return (
@@ -61,8 +73,13 @@ const Register = (props) => {
                   type="text"
                   onChange={onInput}
                   value={state.name}
+                  error={errors.name}
+                  className={classnames("", {
+                    invalid: errors.name
+                  })}
                 />
                 <label htmlFor="name">Name</label>
+                <span className="red-text">{errors.name}</span>
               </div>
               <div className="input-field col s12">
                 <input
@@ -70,8 +87,13 @@ const Register = (props) => {
                   type="email"
                   onChange={onInput}
                   value={state.email}
+                  error={errors.email}
+                  className={classnames("", {
+                    invalid: errors.email
+                  })}
                 />
                 <label htmlFor="email">Email</label>
+                <span className="red-text">{errors.email}</span>
               </div>
               <div className="input-field col s12">
                 <input
@@ -79,8 +101,13 @@ const Register = (props) => {
                   type="password"
                   onChange={onInput}
                   value={state.password}
+                  error={errors.password}
+                  className={classnames("", {
+                    invalid: errors.password
+                  })}
                 />
                 <label htmlFor="password">Password</label>
+                <span className="red-text">{errors.password}</span>
               </div>
               <div className="input-field col s12">
                 <input
@@ -88,8 +115,13 @@ const Register = (props) => {
                   type="password"
                   onChange={onInput}
                   value={state.password2}
+                  error={errors.password2}
+                  className={classnames("", {
+                    invalid: errors.password2
+                  })}
                 />
                 <label htmlFor="password2">Confirm Password</label>
+                <span className="red-text">{errors.password2}</span>
               </div>
               <div className="col s12" style={{ paddingLeft: "11.250px" }}>
                 <button

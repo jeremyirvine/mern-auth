@@ -1,7 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import classnames from 'classnames'
+import { loginUser } from '../../actions/auth'
 
-const Login =() => {
+const Login = (props) => {
+  
+
   // Initial state
   const initialState = {
       email: "",
@@ -9,6 +14,14 @@ const Login =() => {
   }
 
   const [state, setState] = useState(initialState)
+
+  const dispatch = useDispatch()
+  const auth = useSelector(state => state.auth)
+  const errors = useSelector(state => state.errors)
+
+  useEffect(() => {
+    if(auth.isAuthenticated) props.history.push("/dashboard")
+  }, [auth.isAuthenticated, props.history])
   
   // onChange
   const onInput = e => {
@@ -23,11 +36,11 @@ const Login =() => {
     e.preventDefault()
     
     const user = {
-        email: state.email,
-        password: state.password
+      email: state.email,
+      password: state.password
     }
 
-    console.log(user)
+    dispatch(loginUser(user))
   }
   
   return (
@@ -53,8 +66,16 @@ const Login =() => {
                   type="email"
                   value={state.email}
                   onChange={onInput}
+                  error={errors.email}
+                  className={classnames("", {
+                    invalid: errors.email || errors.emailnotfound
+                  })}
                 />
                 <label htmlFor="email">Email</label>
+                <span className="red-text">
+                  {errors.email}
+                  {errors.emailnotfound}
+                </span>
               </div>
               <div className="input-field col s12">
                 <input
@@ -62,8 +83,16 @@ const Login =() => {
                   type="password"
                   value={state.password}
                   onChange={onInput}
+                  error={errors.password}
+                  className={classnames("", {
+                    invalid: errors.password || errors.incorrectcredentials
+                  })}
                 />
                 <label htmlFor="password">Password</label>
+                <span className="red-text">
+                  {errors.password}
+                  {errors.incorrectcredentials}
+                </span>
               </div>
               <div className="col s12" style={{ paddingLeft: "11.250px" }}>
                 <button

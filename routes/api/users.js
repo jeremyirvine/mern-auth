@@ -50,12 +50,12 @@ router.post('/login', (req, res) => {
     // Find user by email
     User.findOne({ email: req.body.email }).then(user => {
         if (!user)
-            return res.status(404).json({ message: "Email not found" })
+            return res.status(404).json({ error: { emailnotfound: "Email not found" } })
 
         bcrypt.compare(req.body.password, user.password)
             .then(isMatch => {
                 if (!isMatch)
-                    return res.status(400).json({ message: "Incorrect Email or Password" })
+                    return res.status(400).json({ error: { incorrectcredentials: "Incorrect Email or Password" } })
 
                 const payload = {
                     id: user.id,

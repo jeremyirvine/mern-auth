@@ -1,6 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const passport = require('passport')
+const morgan = require('morgan')
 
 const { mongoURI: db } = require("./config/keys")
 const app = express()
@@ -9,8 +10,9 @@ const usersRoute = require('./routes/api/users')
 
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use('/users', usersRoute)
+app.use('/api/users', usersRoute)
 app.use(passport.initialize())
+app.use(morgan('dev'))
 require("./config/passport")(passport);
 
 mongoose
